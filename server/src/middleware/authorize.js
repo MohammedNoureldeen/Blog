@@ -20,6 +20,11 @@ const authorize = (resourceType, check) => {
     comment: prisma.comment,
   };
 
+  const paramMap = {
+    post: "id",
+    comment: "commentId",
+  };
+
   return async (req, res, next) => {
     if (!req.user) {
       return next(new AppError("Authentication required", "UNAUTHORIZED", 401));
@@ -35,9 +40,10 @@ const authorize = (resourceType, check) => {
       return next(new AppError(`Unknown resource type: ${resourceType}`, "INTERNAL_ERROR", 500));
     }
 
+    const paramName = paramMap[resourceType] || "id";
     let resource;
     try {
-      resource = await model.findUnique({ where: { id: req.params.id } });
+      resource = await model.findUnique({ where: { id: req.params[paramName] } });
     } catch (err) {
       return next(new AppError("Resource not found", "NOT_FOUND", 404));
     }
