@@ -1,32 +1,20 @@
-# Current Feature — Users: Profiles, Follow, Unfollow
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Create `server/src/modules/user/` module (routes, controller, service, schema)
-- Implement GET /api/v1/users/:username — public profile with optional auth
-- Implement PUT /api/v1/users/me — update own profile (username, avatar, bio, website, socialLinks) with transactional upsert of author_profiles
-- Implement DELETE /api/v1/users/me — hard delete with cascade
-- Implement GET /api/v1/users/:username/posts — cursor-paginated published posts
-- Implement GET /api/v1/users/:username/followers — paginated followers list
-- Implement GET /api/v1/users/:username/following — paginated following list
-- Implement POST /api/v1/users/:username/follow — follow a user (with self-follow guard)
-- Implement DELETE /api/v1/users/:username/follow — unfollow a user
+<!-- Add goals when loading the next feature -->
 
 ## Notes
 
-- `isFollowing` field requires conditional query based on `req.user` (false for guests)
-- Route ordering matters: register `/me` before `/:username` to avoid "me" matching as username param
-- `socialLinks` validated as Zod optional object with twitter/github/linkedin URL fields
-- Uses `optionalAuth` middleware for public endpoints, `authenticate` for mutating ones
-- Update `users` table and upsert `author_profiles` in a single Prisma transaction on PUT /me
-- Cascade deletes should handle related data on DELETE /me
+<!-- Add notes when loading the next feature -->
 
 ## History
 
 - Middleware — Auth, Validation, Error Handling: Implemented authenticate (hard auth with JWT, INVALID_TOKEN error codes), optional-auth (soft auth, req.user = null on missing token), authorize (factory with owner/admin/ownerOrAdmin checks using Prisma lookup), validate (Zod wrapper with body/query/params source), async-handler (async error forwarding), error-handler (AppError handling, Prisma P2002→409/P2025→404 mapping, pino logging, production-safe messages); added JSDoc AuthenticatedUser type; fixed app.js middleware order (pino → helmet → cors → json → rateLimit → routes → errorHandler)
 - Frontend Setup — React + Vite + Tailwind: Installed dependencies (zustand, @tanstack/react-query, react-hook-form, zod, @tailwindcss/typography, marked, dompurify); created Zustand auth store with persist middleware; updated Axios client with 401 refresh interceptor flow; created API endpoint files (auth, posts, users); built UI components (Button, Input, Card, Avatar, Spinner); created layout components (Navbar, Footer, PageWrapper); added hooks (useAuth, useCurrentUser); set up routing with QueryClientProvider and ProtectedRoute; created all page stubs; implemented content gate UI for PostPage; added sanitized markdown renderer utility (marked + DOMPurify); configured Tailwind v4 with typography plugin
 - Project Setup — Monorepo: Initialize npm workspaces with client, server, shared packages; root package.json with workspace config; .gitignore; .env.example; shared JSDoc types; Express skeleton; Vite + React + Tailwind client setup
+- Users — Profiles, Follow, Unfollow: Created user module (routes, controller, service, schema) with 8 endpoints — GET /users/:username (public profile with optionalAuth and isFollowing conditional query), PUT /users/me (update profile with transactional upsert of author_profiles), DELETE /users/me (hard delete with cascade), GET /users/:username/posts (cursor-paginated published posts), GET /users/:username/followers and /following (cursor-paginated follow lists), POST /users/:username/follow (with self-follow guard and ALREADY_FOLLOWING check), DELETE /users/:username/follow (with NOT_FOLLOWING check); Zod validation for profile updates (socialLinks as optional object with twitter/github/linkedin URLs), username params, and pagination queries; registered routes at /api/v1/users in app.js
