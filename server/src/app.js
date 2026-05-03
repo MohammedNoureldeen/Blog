@@ -6,6 +6,7 @@ import pinoHttp from "pino-http";
 import env from "./config/env.js";
 import errorHandler from "./middleware/error-handler.js";
 import authRoutes from "./modules/auth/auth.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get("/api/v1/health", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
