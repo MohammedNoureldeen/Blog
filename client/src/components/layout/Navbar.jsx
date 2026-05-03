@@ -47,10 +47,10 @@ export function Navbar() {
                     New Post
                   </Button>
                 </Link>
-                <Link to={`/profile/${user.name}`}>
+                <Link to={`/profile/${user.username}`}>
                   <Avatar
-                    alt={user.name}
-                    src={user.authorProfile?.avatar}
+                    alt={user.username}
+                    src={user.avatarUrl}
                     size="sm"
                   />
                 </Link>
