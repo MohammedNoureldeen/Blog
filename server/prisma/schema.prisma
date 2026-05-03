@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum PostStatus {
+  published
+  deleted
+}
+
+enum BlockType {
+  markdown
+  plaintext
+  image
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique @db.VarChar(255)
+  username     String   @unique @db.VarChar(50)
+  passwordHash String
+  avatarUrl    String?
+  role         UserRole @default(user)
+  createdAt    DateTime @default(now())
+
+  profile       AuthorProfile?
+  posts         Post[]
+  comments      Comment[]
+  refreshTokens RefreshToken[]
+  likedPosts    Like[]
+  following     Follow[]  @relation("UserFollowing")
+  followers     Follow[]  @relation("UserFollowers")
+  postViews     PostView[]
+}
+
+model AuthorProfile {
+  id         String   @id @default(uuid())
+  bio        String?
+  website    String?
+  socialLinks Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  title        String     @db.VarChar(300)
+  content      Json
+  coverImageUrl String?
+  status       PostStatus @default(published)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  userId String @db.VarChar(36)
+  author User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comments Comment[]
+  likes    Like[]
+  views    PostView[]
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([postId])
+}
+
+model Like {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+model Follow {
+  followerId String
+  followeeId String
+  createdAt  DateTime @default(now())
+
+  follower User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followee User @relation("UserFollowers", fields: [followeeId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followeeId])
+}
+
+model PostView {
+  id       String   @id @default(uuid())
+  viewedAt DateTime @default(now())
+  ipHash   String?
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([postId, userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash])
+}
