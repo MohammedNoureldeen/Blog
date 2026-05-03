@@ -1,16 +1,24 @@
-# Current Feature
+# Current Feature: Comments — Create, List, Delete
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add goals when loading the next feature -->
+- Create comment module with routes, controller, service, and schema
+- Implement GET /api/v1/posts/:id/comments — public, cursor-paginated, oldest-first, 404 on non-published posts
+- Implement POST /api/v1/posts/:id/comments — authenticated, validates content 1-2000 chars, verifies published post, returns 201
+- Implement DELETE /api/v1/comments/:commentId — authenticated, authorize ownerOrAdmin, hard delete
+- Define CommentDto with id, content, createdAt, and author (id, username, avatarUrl)
 
 ## Notes
 
-<!-- Add notes when loading the next feature -->
+- Comments are flat — no parentId field in schema
+- authorize('comment', 'ownerOrAdmin') middleware needs to load comment by req.params.commentId to compare userId
+- Hard deletes are correct for comments (no orphan risk since comments have no dependents)
+- For GET endpoint, comments on soft-deleted posts should still 404 — check post status, not just existence
+- References: coding-standards.md, spec/03-middleware.md, spec/05-posts.md
 
 ## History
 

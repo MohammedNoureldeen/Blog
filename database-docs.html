@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Database Documentation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f1419; color: #e7e9ea; line-height: 1.6; padding: 40px; }
+        h1 { font-size: 2em; margin-bottom: 10px; color: #1d9bf0; }
+        h2 { font-size: 1.5em; margin: 30px 0 15px; color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        h3 { color: #00d4aa; margin-top: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .diagram-section { background: #16181c; border-radius: 16px; padding: 30px; margin: 20px 0; border: 1px solid #2f3336; }
+        .diagram { display: flex; flex-direction: column; gap: 40px; align-items: center; padding: 40px 20px; }
+        .table-row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+        .table-card { background: #1e2128; border: 2px solid #2f3336; border-radius: 12px; min-width: 220px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .table-header { background: linear-gradient(135deg, #1d9bf0, #0f7bc2); padding: 12px 16px; font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .table-header .icon { width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .fields { padding: 10px 0; }
+        .field { padding: 6px 16px; font-size: 0.9em; display: flex; gap: 10px; }
+        .field-name { color: #e7e9ea; font-weight: 500; }
+        .field-type { color: #71767b; font-size: 0.85em; }
+        .pk { color: #ffd700; }
+        .fk { color: #00d4aa; }
+        .enum-badge { background: #9c27b0; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 8px; }
+        .relations { display: flex; flex-direction: column; gap: 15px; padding: 30px; }
+        .rel-card { background: #1e2128; border: 1px solid #2f3336; border-radius: 10px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .rel-card .from { color: #1d9bf0; }
+        .rel-card .to { color: #00d4aa; }
+        .rel-card .type { color: #ffd700; font-size: 0.85em; }
+        .rel-arrow { color: #71767b; font-size: 1.5em; }
+        .enum-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .enum-card { background: #1e2128; border: 1px solid #2f3336; border-radius: 10px; padding: 15px; }
+        .enum-card h4 { color: #9c27b0; margin-bottom: 10px; }
+        .enum-card ul { list-style: none; padding-left: 10px; }
+        .enum-card li { color: #71767b; padding: 4px 0; font-size: 0.9em; }
+        .enum-card li::before { content: "•"; color: #9c27b0; margin-right: 8px; }
+        .stats { display: flex; gap: 30px; flex-wrap: wrap; margin: 20px 0; }
+        .stat { background: #1e2128; padding: 20px 30px; border-radius: 12px; text-align: center; border: 1px solid #2f3336; }
+        .stat-value { font-size: 2.5em; font-weight: bold; color: #1d9bf0; }
+        .stat-label { color: #71767b; font-size: 0.9em; }
+        .rel-note { color: #ffd700; font-size: 0.85em; margin: 3px 0; padding-left: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Blog Database Documentation</h1>
+        <p style="color: #71767b; margin-bottom: 30px;">PostgreSQL Database Schema Overview</p>
+
+        <div class="stats">
+            <div class="stat"><div class="stat-value">7</div><div class="stat-label">Tables</div></div>
+            <div class="stat"><div class="stat-value">3</div><div class="stat-label">Enums</div></div>
+            <div class="stat"><div class="stat-value">9</div><div class="stat-label">Foreign Keys</div></div>
+            <div class="stat"><div class="stat-value">6</div><div class="stat-label">Indexes</div></div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>🔗 Relationships Diagram</h2>
+            <div class="relations">
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── 1</div>
+                        <div class="rel-note">authorId (unique)</div>
+                    </div>
+                    <span class="to">AuthorProfile</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">userId (cascade)</div>
+                    </div>
+                    <span class="to">Post</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">userId (cascade)</div>
+                    </div>
+                    <span class="to">Comment</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">Post</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">postId (cascade)</div>
+                    </div>
+                    <span class="to">Comment</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">userId (cascade)</div>
+                    </div>
+                    <span class="to">Like</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">Post</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">postId (cascade)</div>
+                    </div>
+                    <span class="to">Like</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">∞ ─── ∞</div>
+                        <div class="rel-note">follower/followee (cascade)</div>
+                    </div>
+                    <span class="to">Follow</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">User</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">userId (cascade)</div>
+                    </div>
+                    <span class="to">RefreshToken</span>
+                </div>
+                <div class="rel-card">
+                    <span class="from">Post</span>
+                    <div style="text-align:center">
+                        <div class="rel-arrow">1 ─── ∞</div>
+                        <div class="rel-note">postId (cascade)</div>
+                    </div>
+                    <span class="to">PostView</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>📋 Tables Structure</h2>
+            <div class="diagram">
+                <div class="table-row">
+                    <div class="table-card">
+                        <div class="table-header"><div class="icon">👤</div> User</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">email</span><span class="field-type">VARCHAR(255) UNIQUE</span></div>
+                            <div class="field"><span class="field-name">username</span><span class="field-type">VARCHAR(50) UNIQUE</span></div>
+                            <div class="field"><span class="field-name">passwordHash</span><span class="field-type">TEXT</span></div>
+                            <div class="field"><span class="field-name">avatarUrl</span><span class="field-type">TEXT (nullable)</span></div>
+                            <div class="field"><span class="field-name">role</span><span class="field-type">UserRole</span><span class="enum-badge">enum</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #00d4aa, #00a884);"><div class="icon">📝</div> AuthorProfile</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">bio</span><span class="field-type">TEXT (nullable)</span></div>
+                            <div class="field"><span class="field-name">website</span><span class="field-type">TEXT (nullable)</span></div>
+                            <div class="field"><span class="field-name">socialLinks</span><span class="field-type">JSONB (nullable)</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name">updatedAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name fk">userId</span><span class="field-type">UUID (FK → User) UNIQUE</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #f97316, #ea580c);"><div class="icon">📄</div> Post</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">title</span><span class="field-type">VARCHAR(300)</span></div>
+                            <div class="field"><span class="field-name">content</span><span class="field-type">JSONB</span></div>
+                            <div class="field"><span class="field-name">coverImageUrl</span><span class="field-type">TEXT (nullable)</span></div>
+                            <div class="field"><span class="field-name">status</span><span class="field-type">PostStatus</span><span class="enum-badge">enum</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name">updatedAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name fk">userId</span><span class="field-type">VARCHAR(36) (FK → User)</span></div>
+                            <div class="rel-note">Index: (userId, createdAt DESC)</div>
+                            <div class="rel-note">Index: (status, createdAt DESC)</div>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><div class="icon">💬</div> Comment</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">content</span><span class="field-type">TEXT</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name fk">postId</span><span class="field-type">UUID (FK → Post)</span></div>
+                            <div class="field"><span class="field-name fk">userId</span><span class="field-type">UUID (FK → User)</span></div>
+                            <div class="rel-note">Index: (postId)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #ec4899, #db2777);"><div class="icon">❤️</div> Like</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">userId</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name pk">postId</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="rel-note">Composite PK: (userId, postId)</div>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><div class="icon">🔗</div> Follow</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">followerId</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name pk">followeeId</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="rel-note">Composite PK: (followerId, followeeId)</div>
+                            <div class="rel-note">Self-referencing relationship</div>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #84cc16, #65a30d);"><div class="icon">👁️</div> PostView</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">viewedAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name">ipHash</span><span class="field-type">TEXT (nullable)</span></div>
+                            <div class="field"><span class="field-name fk">postId</span><span class="field-type">UUID (FK → Post)</span></div>
+                            <div class="field"><span class="field-name fk">userId</span><span class="field-type">UUID (FK → User) NULL</span></div>
+                            <div class="rel-note">Index: (postId, userId)</div>
+                        </div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-header" style="background: linear-gradient(135deg, #f43f5e, #e11d48);"><div class="icon">🔑</div> RefreshToken</div>
+                        <div class="fields">
+                            <div class="field"><span class="field-name pk">id</span><span class="field-type">UUID (PK)</span></div>
+                            <div class="field"><span class="field-name">tokenHash</span><span class="field-type">TEXT UNIQUE</span></div>
+                            <div class="field"><span class="field-name">expiresAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name">createdAt</span><span class="field-type">TIMESTAMP</span></div>
+                            <div class="field"><span class="field-name fk">userId</span><span class="field-type">UUID (FK → User)</span></div>
+                            <div class="rel-note">Index: (tokenHash)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>🎭 Enumerations</h2>
+            <div class="enum-section">
+                <div class="enum-card">
+                    <h4>UserRole</h4>
+                    <ul>
+                        <li>user</li>
+                        <li>admin</li>
+                    </ul>
+                </div>
+                <div class="enum-card">
+                    <h4>PostStatus</h4>
+                    <ul>
+                        <li>published</li>
+                        <li>deleted</li>
+                    </ul>
+                </div>
+                <div class="enum-card">
+                    <h4>BlockType</h4>
+                    <ul>
+                        <li>markdown</li>
+                        <li>plaintext</li>
+                        <li>image</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>🔍 Key Design Notes</h2>
+            <ul style="padding-left: 20px; color: #71767b; line-height: 2;">
+                <li><strong style="color: #e7e9ea;">Like</strong> uses composite primary key (userId, postId) to prevent duplicate likes</li>
+                <li><strong style="color: #e7e9ea;">Follow</strong> is a self-referencing many-to-many relationship for user connections</li>
+                <li><strong style="color: #e7e9ea;">AuthorProfile</strong> has a one-to-one relationship with User via unique userId</li>
+                <li><strong style="color: #e7e9ea;">PostView.userId</strong> is nullable to track anonymous views via ipHash</li>
+                <li><strong style="color: #e7e9ea;">Post.content</strong> stores JSONB for flexible block-based content (markdown, plaintext, images)</li>
+                <li><strong style="color: #e7e9ea;">RefreshToken.tokenHash</strong> is hashed for security with both unique constraint and index</li>
+                <li><strong style="color: #e7e9ea;">Cascade delete</strong> on all foreign keys except Comment.userId (RESTRICT) and PostView.userId (SET NULL)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -30,9 +30,23 @@ export function PostEditorPage() {
       setError('Title is required.');
       return;
     }
+    const trimmedContent = content.trim();
+    if (!trimmedContent) {
+      setError('Content is required.');
+      return;
+    }
     createPostMutation.mutate({
       title: title.trim(),
-      content: content.trim(),
+      content: {
+        blocks: [
+          {
+            id: crypto.randomUUID(),
+            type: 'text',
+            content: trimmedContent,
+            order: 0,
+          },
+        ],
+      },
       status: 'published',
     });
   };

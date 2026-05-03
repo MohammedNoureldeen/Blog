@@ -8,6 +8,7 @@ import errorHandler from "./middleware/error-handler.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import { postCommentRoutes, commentRoutes } from "./modules/comment/comment.routes.js";
+import postRoutes from "./modules/post/post.routes.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.get("/api/v1/health", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/posts", postCommentRoutes);
 app.use("/api/v1/comments", commentRoutes);
 
