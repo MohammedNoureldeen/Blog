@@ -51,4 +51,17 @@ postRoutes.delete(
   postController.deletePost
 );
 
+postRoutes.post("/:id/like",
+  authenticate,
+  validate(postIdParamSchema,"params"),
+  postController.likePost
+)
+
+
+postRoutes.delete("/:id/like",
+  authenticate,
+  validate(postIdParamSchema,"params"),
+  postController.likePost
+)
+
 export default postRoutes;

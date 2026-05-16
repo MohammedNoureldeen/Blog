@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../../config/db.js";
 import AppError from "../../lib/app-error.js";
 
@@ -63,7 +64,7 @@ const getPosts = async (userId, { cursor, limit }) => {
         likesCount: _count.likes,
         commentsCount: _count.comments,
         viewsCount: _count.views,
-        isLiked: !!likes.length,
+        isLiked: Array.isArray(likes) ? !!likes.length : false,
       };
     }),
     meta: {
@@ -283,6 +284,61 @@ const getUserPosts = async (username, { cursor, limit }) => {
   };
 };
 
+
+const getPublishPost = async(postId)=>{
+  const post = await prisma.post.findUnique({
+    where :{id:postId},
+    select :{id:true,status:true}
+  });
+
+  if(!post|| post.status !=="published"){
+    throw new AppError("Post not found ","POST_NOT_FOUND",404)
+  }
+
+
+}
+
+
+const likePost = async(postId,userId)=>{
+  await  getPublishPost(postId)
+
+  try{
+    await prisma.likes.create({
+      data :{userId,postId}
+    })
+
+  }catch(error){
+    if(error.code==="P2002"){
+      throw new AppError("Already Liked","ALREADY_LIKED",409);
+    }
+    throw error;
+
+  }
+  const likesCount = await prisma.likes.count({
+    where:{postId}
+  })
+  
+}
+
+
+const unlikePost  = async(postId,userId)=>{
+  await  getPublishPost(postId)
+
+  try {
+    await prisma.likes.delete({
+      where : {userId_postId :{userId , postId}}
+    });
+  } catch (error) {
+    if (error.code === "P2025"){
+      throw new AppError("Not Liked","NOT_LIKED",404)
+    }
+  }
+  const likesCount = await prisma.likes.count({
+    where:{postId}
+  })
+  return {likesCount}
+}
+
 export default {
   getPosts,
   createPost,
@@ -291,4 +347,6 @@ export default {
   deletePost,
   getUserPosts,
   truncateContent,
+  unlikePost,
+  likePost
 };

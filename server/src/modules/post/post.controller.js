@@ -4,7 +4,7 @@ import { asyncHandler } from "../../middleware/async-handler.js";
 const getPosts = async (req, res) => {
   const result = await postService.getPosts(req.user?.id, {
     cursor: req.query.cursor,
-    limit: req.query.limit,
+    limit: parseInt(req.query.limit, 10),
   });
 
   res.json({ success: true, data: result.items, meta: result.meta });
@@ -34,10 +34,24 @@ const deletePost = async (req, res) => {
   res.json({ success: true, data: result });
 };
 
+
+const likePost = async(req,res)=>{
+  const result = await postService.likePost(req.params.id,req.user.id);
+  res.status(201).json({Sucess:true , data:result})
+}
+
+
+
+const unlikePost = async(req,res)=>{
+  const result = await postService.unlikePost(req.params.post,req.user.id)
+  res.json({ success: true, data: result });
+}
 export default {
   getPosts: asyncHandler(getPosts),
   createPost: asyncHandler(createPost),
   getPost: asyncHandler(getPost),
   updatePost: asyncHandler(updatePost),
   deletePost: asyncHandler(deletePost),
+  likePost: asyncHandler(likePost),
+  unlikePost: asyncHandler(unlikePost),
 };

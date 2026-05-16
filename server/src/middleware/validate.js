@@ -17,7 +17,11 @@ const validate = (schema, source = "body") => (req, res, next) => {
     const firstError = Object.values(errors).flat()[0] || "Validation failed";
     return next(new AppError(firstError, "VALIDATION_ERROR", 422));
   }
-  req[source] = result.data;
+  if (source !== "query") {
+    req[source] = result.data;
+  } else {
+    Object.assign(req.query, result.data);
+  }
   next();
 };
 

@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Likes — Like and Unlike Posts
 
 ## Status
 
@@ -6,11 +6,18 @@ Not Started
 
 ## Goals
 
-<!-- Add goals when loading the next feature -->
+- Add POST /api/v1/posts/:id/like — authenticated, creates like row, returns fresh likesCount
+- Add DELETE /api/v1/posts/:id/like — authenticated, removes like row, returns fresh likesCount
+- Catch Prisma P2002 on duplicate like → 409 ALREADY_LIKED
+- Catch zero-row delete on unlike → 404 NOT_LIKED
+- Mount like routes inside post.routes.ts (no separate likes module)
 
 ## Notes
 
-<!-- Add notes when loading the next feature -->
+- Likes are on posts only — no comment likes
+- Composite PK (userId, postId) on likes table prevents duplicates at DB level
+- Returning likesCount lets client update counter without refetch
+- References: coding-standards.md, spec/05-posts.md, spec/03-middleware.md
 
 ## History
 

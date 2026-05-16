@@ -23,7 +23,7 @@ const deleteAccount = async (req, res) => {
 const getUserPosts = async (req, res) => {
   const result = await userService.getUserPosts(req.params.username, {
     cursor: req.query.cursor,
-    limit: req.query.limit,
+    limit: parseInt(req.query.limit, 10),
   });
 
   res.json({ success: true, data: result.items, meta: result.meta });
@@ -32,7 +32,7 @@ const getUserPosts = async (req, res) => {
 const getFollowers = async (req, res) => {
   const result = await userService.getFollowers(req.params.username, {
     cursor: req.query.cursor,
-    limit: req.query.limit,
+    limit: parseInt(req.query.limit, 10),
   });
 
   res.json({ success: true, data: result.items, meta: result.meta });
@@ -41,7 +41,7 @@ const getFollowers = async (req, res) => {
 const getFollowing = async (req, res) => {
   const result = await userService.getFollowing(req.params.username, {
     cursor: req.query.cursor,
-    limit: req.query.limit,
+    limit: parseInt(req.query.limit, 10),
   });
 
   res.json({ success: true, data: result.items, meta: result.meta });

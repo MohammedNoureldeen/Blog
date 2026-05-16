@@ -4,7 +4,7 @@ import { asyncHandler } from "../../middleware/async-handler.js";
 const getComments = async (req, res) => {
   const result = await commentService.getComments(req.params.id, {
     cursor: req.query.cursor,
-    limit: req.query.limit,
+    limit: parseInt(req.query.limit, 10),
   });
 
   res.json({ success: true, data: result.items, meta: result.meta });
